@@ -1,70 +1,116 @@
-// Спостерігач (Observer) — це патерн програмування, який визначає залежність "один-багато" між об'єктами, так що зміна стану одного об'єкта
-// призводить до автоматичного оновлення всіх залежних об'єктів
-/**
- * Клас Customer представляє клієнта, що має можливість отримувати повідомлення по електронній пошті.
- * Клієнт ідентифікується своєю електронною адресою, яку використовується для відправки повідомлень.
- */
-class Customer {
+// Фабрика (Factory) — це патерн програмування, який надає загальний клас для створення об'єктів, який враховує
+// передані аргументи та вирішує який клас повинен мати об’єкт при створенні
+// Клас Book описує книгу в магазині
+class Book {
   /**
-   * Конструктор для класу Customer. Приймає email - Електронна адреса клієнта.
+   * Конструктор Book приймає об'єкт з параметрами
+   * title - назва книги
+   * author - автор книги
+   * coverColor - колір обкладинки книги
    */
+  constructor({ title, author, coverColor }) {
+    this.title = title;
+    this.author = author;
+    this.coverColor = coverColor;
+  }
   /**
-   * Метод відправки повідомлення клієнту по електронній пошті.Приймає message - повідомлення,та виводить в консоль ${this.email} ${message}.
+   * Метод describe генерує опис книги
+   *  Повертає рядок у форматі: "Книга: '{назва}', автор: '{автор}', колір обкладинки: '{колір}'"
    */
+  describe() {
+    return `Книга: '${this.title}', автор: '${this.author}', колір обкладинки: '${this.coverColor}'`;
+  }
 }
 
 /**
- * Клас Product представляє продукт, який можна створювати.
+ * Клас AudioBook описує аудіокнигу в магазині
  */
-class Product {
+class AudioBook {
   /**
-   * Конструктор для класу Product.Приймає name - Назва продукту.
+   * Конструктор AudioBook приймає об'єкт з параметрами
+   * title - назва книги
+   * author - автор книги
+   * audioLength - тривалість аудіокниги
    */
+  constructor({ title, author, audioLength }) {
+    this.title = title;
+    this.author = author;
+    this.audioLength = audioLength;
+  }
+  /**
+     * Метод describe генерує опис аудіокниги
+       Повертає рядок у форматі: "Аудіокнига: '{назва}', автор: '{автор}', тривалість: '{тривалість}'"
+     */
+  describe() {
+    return `Аудіокнига: '${this.title}', автор: '${this.author}', тривалість: '${this.audioLength}'`;
+  }
 }
 
 /**
- * Клас Store представляє магазин, який може мати підписників і створювати нові продукти.
- * Магазин має назву і список підписників, які отримують повідомлення про нові продукти.
+ * Клас ProductFactory використовується для створення об'єктів-продуктів.
  */
-class Store {
-  /**
-   * Конструктор для класу Store.Приймає name - Назва магазину, та створює пустий масив customers
-   */
-  /**
-   * Метод subscribe для підписки клієнта на магазин. Приймає customer - Клієнт, який підписується.
-   * Після виклику цього методу, клієнт буде отримувати повідомлення про нові продукти, через push додаємо клієнта до масиву.
-   */
-  /**
-   * Метод unsubscribe для відписки клієнта від магазину.Приймає customer - Клієнт, який відписується.
-   * Після виклику цього методу, клієнт більше не буде отримувати повідомлення про нові продукти, через filter прибираємо клієнта з масиву.
-   */
-  /**
-   * Метод createProduct для створення нового продукту в магазині.Приймає name - Назва нового продукту.
-   * Після виклику цього методу, новий продукт буде створено, а всі підписники отримають про це повідомлення через sendNotify.
-   */
-  /**
-   * Метод для відправки повідомлень всім підписникам про новий продукт.Приймає product - Продукт, про який відправляється повідомлення.
-   * Новий продукт "${product.name}" в магазині ${this.name}! за допомогою sendEmail.
-   */
-  // За допомогою forEach перебираємо масив customers
-  // Для кожного елементу масиву викликаємо метод sendEmail з рядком `Новий продукт "${product.name}" в магазині ${this.name}!`
-}
 
-console.log("Завдання 3 ====================================");
+class ProductFactory {
+  // TYPE - статична властивість, що визначає типи продуктів, які можуть бути створені.
+  // {
+  //   BOOK: "book",
+  //   AUDIOBOOK: "audiobook",
+  // }
+  /**
+   * Статичний метод createProduct використовується для створення об'єктів-продуктів, отримує
+   * type - тип продукту, що має бути створений. Має бути одним зі значень властивості TYPE.
+   * options - об'єкт з параметрами для конструктора продукту.
+   *
+   * В залежності від типу, повертає або екземпляр класу Book, або AudioBook.
+   *
+   *  Кидає помилку, якщо переданий тип не підтримується `Такого типу продукту не існує: ${type}`.
+   */
+  static TYPE = {
+    BOOK: "book",
+    AUDIOBOOK: "audiobook",
+  };
+
+  static createProduct(type, options) {
+    switch (type) {
+      case this.TYPE.BOOK:
+        return new Book(options);
+      case this.TYPE.AUDIOBOOK:
+        return new AudioBook(options);
+      default:
+        throw new Error(`Такого типу продукту не існує: ${type}`);
+    }
+  }
+}
+console.log("Завдання 2 ====================================");
 // Після виконання розкоментуйте код нижче
 
-// const store = new Store("IT Supermarket");
+// Використовуємо ProductFactory для створення нової книги
+const factoryBook = ProductFactory.createProduct(ProductFactory.TYPE.BOOK, {
+  title: "Назва книги",
+  author: "Автор книги",
+  coverColor: "Синій",
+});
 
-// const customer1 = new Customer("john@example.com");
-// const customer2 = new Customer("jane@example.com");
-// const customer3 = new Customer("alice@example.com");
+// Виводимо в консоль опис нової книги
+console.log(factoryBook.describe());
 
-// store.subscribe(customer1);
-// store.subscribe(customer2);
-// store.subscribe(customer3);
+// Використовуємо ProductFactory для створення нової аудіокниги
+const factoryAudiobook = ProductFactory.createProduct(
+  ProductFactory.TYPE.AUDIOBOOK,
+  {
+    title: "Назва аудіокниги",
+    author: "Автор аудіокниги ",
+    audioLength: "5 годин",
+  }
+);
 
-// store.createProduct("Новий ноутбук");
+// Виводимо в консоль опис нової аудіокниги
+console.log(factoryAudiobook.describe());
 
-// store.unsubscribe(customer1);
-
-// store.createProduct("Бездротові навушники");
+// Спробуємо створити продукт непідтримуваного типу
+try {
+  const factoryUnknown = ProductFactory.createProduct("comics", {});
+} catch (error) {
+  // Виводимо помилку в консоль
+  console.error(error.message);
+}
